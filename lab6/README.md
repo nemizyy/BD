@@ -160,8 +160,8 @@ model chat_message {
 ## Результати та скріншоти тестів
 <details>
   <summary>ER-діагрма після всіх операцій</summary>
-  <img width="1193" height="748" alt="image" src="https://github.com/user-attachments/assets/3610c135-bcc3-43cf-a03e-dd3a8f01eec4" />
-  
+  <img width="649" height="437" alt="image" src="https://github.com/user-attachments/assets/e01b4879-1554-4512-8449-30eee3d62b89" />
+
   до них були відповідні звязки між tournament і game
 </details>
 <details>
