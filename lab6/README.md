@@ -162,17 +162,21 @@ model chat_message {
   <summary>ER-діагрма після всіх операцій</summary>
   <img width="649" height="437" alt="image" src="https://github.com/user-attachments/assets/e01b4879-1554-4512-8449-30eee3d62b89" />
 
-  до них були відповідні звязки між tournament і game
 </details>
 <details>
-  <summary>Додані данні в нову таблицю</summary>
- <img width="1302" height="449" alt="image" src="https://github.com/user-attachments/assets/93d57bb9-75f0-40a8-a191-98915078b414" />
+  <summary>Додані данні в таблицю</summary>
+  <img width="1095" height="271" alt="image" src="https://github.com/user-attachments/assets/8fe92ebe-6d8e-483c-ac59-938df66b7970" />
+
 </details>
 <details>
   <summary>Додаємо данні через Prisma studio</summary>
-  <img width="1675" height="255" alt="image" src="https://github.com/user-attachments/assets/dd0d6858-61ab-4678-9d01-c36812d0d8ed" />
+  
+  <img width="560" height="166" alt="image" src="https://github.com/user-attachments/assets/f2743902-bb13-475d-aa2b-7e6f092c3fa5" />
+  
   і перевірити можем через pgadmin 
-  <img width="1297" height="163" alt="image" src="https://github.com/user-attachments/assets/81852910-de25-4712-9bf9-4c70f17e63b5" />
+
+  <img width="554" height="410" alt="image" src="https://github.com/user-attachments/assets/5b0e3ac4-9006-4209-a8d7-9e10fcf99725" />
+
 </details>
 
 ---
