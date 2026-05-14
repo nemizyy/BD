@@ -33,7 +33,7 @@
 ```
 npm init -y
 npm install prisma --save-dev
-npx prisma init --datasorce-provider postgresql
+npx prisma init --datasource-provider postgresql
 ```
 перед виконанням наступної команди треба налаштувати DATABASE_URL в .env 
 ```
