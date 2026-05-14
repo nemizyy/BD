@@ -57,102 +57,105 @@ npx prisma db pull
 <details>
 <summary>Переглянути фінальний schema.prisma </summary>
   
+```prisma
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model friendship {
-  user1_id                           Int
-  user2_id                           Int
-  status                             String?   @default("pending") @db.VarChar(20)
-  created_at                         DateTime? @default(now()) @db.Timestamp(6)
-  player_friendship_user1_idToplayer player    @relation("friendship_user1_idToplayer", fields: [user1_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  player_friendship_user2_idToplayer player    @relation("friendship_user2_idToplayer", fields: [user2_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([user1_id, user2_id])
+model asset {
+  id               Int         @id @default(autoincrement())
+  inventory_number String      @unique @db.VarChar(50)
+  name             String      @db.VarChar(200)
+  purchase_date    DateTime?   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  cost             Decimal     @db.Decimal(10, 2)
+  status_id        Int
+  category_id      Int
+  room_id          Int
+  employee_id      Int
+  category         category    @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  employee         employee    @relation(fields: [employee_id], references: [id], onUpdate: NoAction)
+  room             room        @relation(fields: [room_id], references: [id], onUpdate: NoAction)
+  assetstatus      assetstatus @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  transfer_history transfer_history[]
 }
 
-model game {
-  id                                  Int            @id @default(autoincrement())
-  white_player_id                     Int
-  black_player_id                     Int?
-  time_control_id                     Int
-  /// tournament_id                   Int?
-  played_at                           DateTime?      @default(now()) @db.Timestamp(6)
-  result_id                           Int?
-  game_result                         game_result?   @relation(fields: [result_id], references: [id], onDelete: Restrict, onUpdate: NoAction, map: "fk_game_result")
-  player_game_black_player_idToplayer player?        @relation("game_black_player_idToplayer", fields: [black_player_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
-  time_control                        time_control   @relation(fields: [time_control_id], references: [id], onUpdate: NoAction)
-  /// tournament                      tournament?  @relation(fields: [tournament_id], references: [id], onUpdate: NoAction)
-  player_game_white_player_idToplayer player         @relation("game_white_player_idToplayer", fields: [white_player_id], references: [id], onUpdate: NoAction)
-  move                                move[]
-  chat_message                        chat_message[]
+model assetstatus {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @db.VarChar(50)
+  asset asset[]
 }
 
-model game_result {
-  id          Int    @id @default(autoincrement())
-  code        String @unique @db.VarChar(20)
-  description String @db.VarChar(50)
-  game        game[]
+model building {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+  room room[]
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model move {
-  game_id     Int
-  move_number Int
-  notation    String @db.VarChar(10)
-  game        game   @relation(fields: [game_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([game_id, move_number])
+model category {
+  id                Int      @id @default(autoincrement())
+  name              String   @unique @db.VarChar(100)
+  //depreciation_rate Decimal? @db.Decimal(5, 2)
+  asset             asset[]
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model player {
-  id                                     Int            @id @default(autoincrement())
-  username                               String         @unique @db.VarChar(50)
-  email                                  String         @unique @db.VarChar(100)
-  password_hash                          String         @db.VarChar(255)
-  rating                                 Int            @default(1200)
-  avatar_url                             String?        @db.VarChar(255)
-  is_active                              Boolean        @default(true)
-  friendship_friendship_user1_idToplayer friendship[]   @relation("friendship_user1_idToplayer")
-  friendship_friendship_user2_idToplayer friendship[]   @relation("friendship_user2_idToplayer")
-  game_game_black_player_idToplayer      game[]         @relation("game_black_player_idToplayer")
-  game_game_white_player_idToplayer      game[]         @relation("game_white_player_idToplayer")
-  chat_message                           chat_message[]
+model department {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique @db.VarChar(100)
+  phone_ext String?    @db.VarChar(20)
+  employee  employee[]
 }
 
+model employee {
+  id                    Int                @id @default(autoincrement())
+  department_id         Int
+  first_name            String             @db.VarChar(50)
+  last_name             String             @db.VarChar(50)
+  position              String             @db.VarChar(100)
+  
+  // ДОДАНІ ПОЛЯ ДЛЯ МІГРАЦІЇ 2:
+  email                 String?            @unique @db.VarChar(100)
+  is_active             Boolean            @default(true)
 
-
-model time_control {
-  id               Int    @id @default(autoincrement())
-  name             String @db.VarChar(50)
-  initial_time_sec Int
-  increment_sec    Int
-  game             game[]
+  asset                 asset[]
+  department            department         @relation(fields: [department_id], references: [id], onUpdate: NoAction)
+  transfer_history_from transfer_history[] @relation("TransferFromEmployee")
+  transfer_history_to   transfer_history[] @relation("TransferToEmployee")
 }
 
-model tournament {
-  id         Int      @id @default(autoincrement())
-  title      String   @db.VarChar(100)
-  start_date DateTime @db.Timestamp(6)
+model room {
+  id          Int      @id @default(autoincrement())
+  room_number String   @db.VarChar(20)
+  building_id Int
+  capacity    Int?
+  asset       asset[]
+  building    building @relation(fields: [building_id], references: [id], onUpdate: NoAction)
+  transfer_history_from transfer_history[] @relation("TransferFromRoom")
+  transfer_history_to   transfer_history[] @relation("TransferToRoom")
+
+  @@unique([room_number, building_id], map: "unique_room_in_building")
 }
 
-model chat_message {
-  id        Int      @id @default(autoincrement())
-  game_id   Int
-  player_id Int
-  message   String   @db.Text
-  sent_at   DateTime @default(now()) @db.Timestamp(6)
-  game      game     @relation(fields: [game_id], references: [id], onDelete: Cascade)
-  player    player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+model transfer_history {
+  id               Int       @id @default(autoincrement())
+  asset_id         Int
+  from_room_id     Int?
+  to_room_id       Int?
+  from_employee_id Int?
+  to_employee_id   Int?
+  transfer_date    DateTime  @default(now()) @db.Timestamp(6)
+
+  // Зв'язки (Relations)
+  asset            asset     @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  from_room        room?     @relation("TransferFromRoom", fields: [from_room_id], references: [id], onUpdate: NoAction)
+  to_room          room?     @relation("TransferToRoom", fields: [to_room_id], references: [id], onUpdate: NoAction)
+  from_employee    employee? @relation("TransferFromEmployee", fields: [from_employee_id], references: [id], onUpdate: NoAction)
+  to_employee      employee? @relation("TransferToEmployee", fields: [to_employee_id], references: [id], onUpdate: NoAction)
 }
+```
 </details>
 
 ---
